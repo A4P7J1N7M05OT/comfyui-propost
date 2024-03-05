@@ -9,12 +9,11 @@ def _makeGrayNoise(width, height, power):
 def _makeRgbNoise(width, height, power, saturation):
     intens_power = power * (1.0 - saturation)
     intens = np.random.normal(128, intens_power, (height, width))
-    intens = np.clip(intens, 0, 255)
 
     noise = np.random.normal(0, power, (height, width, 3)) * saturation
-    buffer = noise + intens[:, :, np.newaxis]
-    buffer = buffer.astype(np.uint8)
+    noise += intens[:, :, np.newaxis]
 
+    buffer = np.clip(noise, 0, 255).astype(np.uint8)
     return Image.fromarray(buffer)
 
 def grainGen(width, height, grain_size, power, saturation, seed=1):
