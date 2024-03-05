@@ -3,16 +3,18 @@ import numpy as np
 
 def _makeGrayNoise(width, height, power):
     # Generate noise directly in the uint8 data type to avoid conversion
-    buffer = np.random.normal(128, power, (height, width)).clip(0, 255).astype(np.uint8)
+    noise = np.random.normal(128, power, (height, width)).clip(0, 255).astype(np.uint8)
     return Image.fromarray(buffer)
 
 def _makeRgbNoise(width, height, power, saturation):
     intens_power = power * (1.0 - saturation)
-    intens = np.random.normal(128, intens_power, (height, width)).clip(0, 255)
-    buffer = np.zeros([height, width, 3], dtype=np.uint8)
-    buffer[:, :, 0] = np.random.normal(0, power, (height, width)) * saturation + intens
-    buffer[:, :, 1] = np.random.normal(0, power, (height, width)) * saturation + intens
-    buffer[:, :, 2] = np.random.normal(0, power, (height, width)) * saturation + intens
+    intens = np.random.normal(128, intens_power, (height, width))
+    intens = np.clip(intens, 0, 255)
+
+    noise = np.random.normal(0, power, (height, width, 3)) * saturation
+    buffer = noise + intens[:, :, np.newaxis]
+    buffer = buffer.astype(np.uint8)
+
     return Image.fromarray(buffer)
 
 def grainGen(width, height, grain_size, power, saturation, seed=1):
