@@ -29,7 +29,7 @@ def _grainTypes(typ):
 MASK_CACHE_PATH = os.path.join(tempfile.gettempdir(), "mask-cache")
 
 def _getGrainMask(img_width:int, img_height:int, saturation:float, grayscale:bool, grain_size:float, grain_gauss:float, seed):
-    sat = -1.0 if grayscale else saturation
+    sat = -1.0 if grayscale else saturation # Graingen makes a grayscale image if sat is negative
     filename = os.path.join(MASK_CACHE_PATH, f"grain-{img_width}-{img_height}-{saturation}-{grain_size}-{grain_gauss}-{seed}.png")
     
     if not os.path.isfile(filename):
@@ -57,7 +57,11 @@ def process(image, scale:float, src_gamma:float, grain_power:float, shadows:floa
     
     img_width, img_height = img.size
     print(f"Size: {img_width} x {img_height}")
+    print("Calculating map ...")
     map = graingamma.Map.calculate(src_gamma, grain_power, shadows, highs)
+    # map.saveToFile("map.png")
+                
+    print("Calculating grain stock ...")
     grain_size, grain_gauss = _grainTypes(grain_type)
     mask = _getGrainMask(img_width, img_height, grain_sat, gray_scale, grain_size, grain_gauss, seed)
 
