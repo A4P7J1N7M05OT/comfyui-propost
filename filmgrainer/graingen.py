@@ -3,7 +3,8 @@ import numpy as np
 
 def _makeGrayNoise(width, height, power):
     # Generate noise directly in the uint8 data type to avoid conversion
-    buffer = np.random.normal(128, power, (height, width)).clip(0, 255).astype(np.uint8)
+    noise = np.random.normal(128, power, (height, width))
+    buffer = np.clip(noise, 0, 255).astype(np.uint8)
     return Image.fromarray(buffer)
 
 def _makeRgbNoise(width, height, power, saturation):
